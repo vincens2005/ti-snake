@@ -10,15 +10,17 @@
 #define RIGHT 2
 #define DOWN 3
 
+
+
 int game_looping = 1;
 
 int direction = LEFT;
 
-int game[GAME_RES][GAME_RES];
+int game[GAME_RES][GAME_RES]; // 0 is black, 1 is snake, 2 is apple
 
 int snake[1000][3]; // is it there? x, y
 
-int snake_len = 8;
+int snake_len = 15;
 int apple_pos[2];
 
 int score = 0;
@@ -34,10 +36,10 @@ void draw_frame() {
 	for (int i = 0; i < GAME_RES; i++) {
 		for (int ii = 0; ii < GAME_RES; ii++) {
 			if (game[i][ii] == 1) {
-				gfx_SetColor(127);
+				gfx_SetColor(7);
 			}
 			else if (game[i][ii] == 2) {
-				gfx_SetColor(237);
+				gfx_SetColor(192);
 			}
 			else {
 				continue;
@@ -71,26 +73,23 @@ void set_apple_pos() {
 	
 
 void checkinput() {
-		sk_key_t key = os_GetCSC();
-		switch (key) {
-			case sk_Down:
-				direction = DOWN;
-				break;
-			case sk_Up:
-				direction = UP;
-				break;
-			case sk_Left:
-				direction = LEFT;
-				break;
-			case sk_Right:
-				direction = RIGHT;
-				break;
-			case sk_Clear:
-				game_looping = 0;
-				break;
-			default:
-				break;	
-		}
+	sk_key_t key = os_GetCSC();
+	if (key == sk_Up && direction != DOWN) {
+		direction = UP;
+	}
+	if (key == sk_Down && direction != UP) {
+		direction = DOWN;
+	}
+	if (key == sk_Left && direction != RIGHT) {
+		direction = LEFT;
+	}
+	if (key == sk_Right && direction != LEFT) {
+		direction = RIGHT;
+	}
+	if (key == sk_Clear) {
+		game_looping = 0;
+	}
+
 }
 
 void check_apple_hit() {

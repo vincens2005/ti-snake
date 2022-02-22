@@ -84,7 +84,7 @@ BB1_3:
 	ld	de, 1
 	or	a, a
 	sbc	hl, de
-	ld	a, 127
+	ld	a, 7
 	ld	l, a
 	jq	z, BB1_8
 	lea	hl, iy
@@ -95,7 +95,7 @@ BB1_3:
 	ex	de, hl
 	ld	hl, (ix - 6)
 	jq	nz, BB1_9
-	ld	a, -19
+	ld	a, -64
 	ld	l, a
 BB1_8:
 	push	hl
@@ -241,53 +241,61 @@ _set_apple_pos:
 	public	_checkinput
 _checkinput:
 	call	_os_GetCSC
-	ld	l, a
-	sub	a, 1
+	ld	de, (_direction)
 	cp	a, 4
-	jq	c, BB4_3
-	ld	de, 0
-	ld	a, l
-	cp	a, 15
-	jq	nz, BB4_9
-	ld	(_game_looping), de
-	ret
-BB4_3:
-	ld	bc, 0
-	push	bc
-	pop	de
-	ld	e, a
-	ld	hl, LJTI4_0
-	add	hl, de
-	add	hl, de
-	add	hl, de
-	ld	hl, (hl)
-	push	bc
-	pop	de
-	jp	(hl)
-BB4_4:
-	ld	hl, 3
-	jq	BB4_8
-BB4_7:
-	ld	hl, 2
-	jq	BB4_8
-BB4_5:
+	jq	nz, BB4_4
+	ld	bc, 3
+	push	de
+	pop	hl
+	or	a, a
+	sbc	hl, bc
+	jq	z, BB4_4
 	ld	hl, 1
-BB4_8:
+	jq	BB4_3
+BB4_4:
+	cp	a, 1
+	jq	nz, BB4_7
+	ld	bc, 1
+	push	de
+	pop	hl
+	or	a, a
+	sbc	hl, bc
+	jq	z, BB4_7
+	ld	hl, 3
+	jq	BB4_3
+BB4_7:
+	cp	a, 2
+	jq	nz, BB4_10
+	ld	bc, 2
+	push	de
+	pop	hl
+	or	a, a
+	sbc	hl, bc
+	jq	z, BB4_10
+	or	a, a
+	sbc	hl, hl
+	jq	BB4_3
+BB4_10:
+	cp	a, 3
+	jq	nz, BB4_13
+	ex	de, hl
+	add	hl, bc
+	or	a, a
+	sbc	hl, bc
+	jq	z, BB4_13
+	ld	hl, 2
+BB4_3:
 	ld	(_direction), hl
-BB4_9:
 	ret
-BB4_6:
-	ld	(_direction), de
+BB4_13:
+	cp	a, 15
+	jq	nz, BB4_15
+	or	a, a
+	sbc	hl, hl
+	ld	(_game_looping), hl
+BB4_15:
 	ret
 	section	.text,"ax",@progbits
-	section	.rodata,"a",@progbits
-lJTI4_0:
-	private	LJTI4_0
-LJTI4_0:
-	dl	BB4_4
-	dl	BB4_6
-	dl	BB4_7
-	dl	BB4_5
 
 	section	.text,"ax",@progbits
 	public	_check_apple_hit
@@ -727,7 +735,7 @@ _direction:
 	section	.data,"aw",@progbits
 	public	_snake_len
 _snake_len:
-	dl	8
+	dl	15
 
 	section	.bss,"aw",@nobits
 	public	_score
