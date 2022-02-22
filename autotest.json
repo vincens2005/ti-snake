@@ -1,0 +1,25 @@
+{
+  "transfer_files":
+  [
+    "bin/Snake.8xp"
+  ],
+  "target":
+  {
+    "name": "Snake",
+    "isASM": true
+  },
+  "sequence":
+  [
+    "action|launch",
+    "delay|300",
+    "hashWait|1",
+    "key|enter",
+    "hashWait|2",
+    "key|enter",
+    "hashWait|3",
+    "key|enter",
+    "hashWait|4",
+    "key|enter"
+  ],
+  "hashes": {}
+}
