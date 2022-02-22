@@ -4,6 +4,7 @@
 #include <time.h>
 #include <fontlibc.h>
 #include <stdio.h>
+#include <fileioc.h>
 
 #include "fonts/fonts.h"
 
@@ -19,6 +20,8 @@
 int game_looping = 1;
 
 int direction = LEFT;
+
+int highscore = 0;
 
 int game[GAME_RES][GAME_RES]; // 0 is black, 1 is snake, 2 is apple
 
@@ -38,11 +41,18 @@ void draw_frame() {
 	gfx_SetDrawBuffer();
 	gfx_FillScreen(0);
 	
-	char text_score[13];
+	char text_score[13]; // max seven digit number score
 	sprintf(text_score, "score %d", score);
 	fontlib_ClearWindow();
 	fontlib_SetCursorPosition(5, fontlib_GetWindowYMin());
 	fontlib_DrawString(text_score);
+	
+	if (highscore > 0) {
+		char text_hs[16];
+		sprintf(text_hs, "hi score %d", highscore);
+		fontlib_Newline();
+		fontlib_DrawString(text_hs);
+	}
 	
 	for (int i = 0; i < GAME_RES; i++) {
 		for (int ii = 0; ii < GAME_RES; ii++) {
@@ -104,10 +114,24 @@ void checkinput() {
 
 }
 
+void increment_highscore() {
+	highscore = score;
+	ti_var_t f = ti_Open("snakeHS", "w");
+	ti_Write(&highscore, sizeof(highscore), 1, f);
+}
+
+void load_highscore() {
+	ti_var_t f = ti_Open("snakeHS", "r");
+	ti_Read(&highscore, sizeof(highscore), 1, f);
+}
+
 void check_apple_hit() {
 	if (snake[0][1] == apple_pos[0] && snake[0][2] == apple_pos[1]) {
 		snake_len++;
 		score++;
+		if (score > highscore) {
+			increment_highscore();
+		}
 		for (int i = 0; i < 1000; i++) {
 			if (!snake[i][0]) {
 				snake[i][0] = 1; // give snake extra segment
@@ -192,6 +216,8 @@ int main(void) {
 	fontlib_SetWindow(5, 5, LCD_WIDTH, LCD_HEIGHT);
 	fontlib_SetColors(255, 0);
 	fontlib_SetTransparency(false);
+	
+	load_highscore();
 	build_snake();
 	set_apple_pos();
 	while (game_looping) {
@@ -200,7 +226,7 @@ int main(void) {
 		move_snake();
 		generate_frame();
 		draw_frame();
-		usleep(50000);		
+		usleep(30000);		
 
 		//game_looping++;
 	}
