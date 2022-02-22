@@ -2,6 +2,10 @@
 #include <graphx.h>
 #include <string.h>
 #include <time.h>
+#include <fontlibc.h>
+#include <stdio.h>
+
+#include "fonts/fonts.h"
 
 #define GAME_RES 40
 
@@ -33,6 +37,13 @@ int rand_range(int min, int max) {
 void draw_frame() {
 	gfx_SetDrawBuffer();
 	gfx_FillScreen(0);
+	
+	char text_score[13];
+	sprintf(text_score, "score %d", score);
+	fontlib_ClearWindow();
+	fontlib_SetCursorPosition(5, fontlib_GetWindowYMin());
+	fontlib_DrawString(text_score);
+	
 	for (int i = 0; i < GAME_RES; i++) {
 		for (int ii = 0; ii < GAME_RES; ii++) {
 			if (game[i][ii] == 1) {
@@ -50,6 +61,7 @@ void draw_frame() {
 	}
 	
 	//gfx_FillRectangle(20, 20, LCD_WIDTH / GAME_RES, LCD_HEIGHT / GAME_RES);
+
 	gfx_BlitBuffer();
 }
 
@@ -175,6 +187,11 @@ void build_snake() {
 
 int main(void) {
 	gfx_Begin();
+	fontlib_SetFont(test_font, 0);
+	fontlib_SetLineSpacing(2, 2);
+	fontlib_SetWindow(5, 5, LCD_WIDTH, LCD_HEIGHT);
+	fontlib_SetColors(255, 0);
+	fontlib_SetTransparency(false);
 	build_snake();
 	set_apple_pos();
 	while (game_looping) {
@@ -183,7 +200,8 @@ int main(void) {
 		move_snake();
 		generate_frame();
 		draw_frame();
-		usleep(75000);
+		usleep(50000);		
+
 		//game_looping++;
 	}
 

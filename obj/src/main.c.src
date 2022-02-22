@@ -43,11 +43,13 @@ _rand_range:
 	section	.text,"ax",@progbits
 	public	_draw_frame
 _draw_frame:
-	ld	hl, -15
+	ld	hl, -28
 	call	__frameset
 	ld	hl, 1
 	ld	de, _game
-	ld	(ix - 3), de
+	ld	(ix - 16), de
+	lea	de, ix - 13
+	ld	(ix - 19), de
 	push	hl
 	call	_gfx_SetDraw
 	pop	hl
@@ -55,6 +57,29 @@ _draw_frame:
 	sbc	hl, hl
 	push	hl
 	call	_gfx_FillScreen
+	pop	hl
+	ld	hl, (_score)
+	push	hl
+	ld	hl, L_.str
+	push	hl
+	ld	hl, (ix - 19)
+	push	hl
+	call	___sprintf
+	pop	hl
+	pop	hl
+	pop	hl
+	call	_fontlib_ClearWindow
+	call	_fontlib_GetWindowYMin
+	ld	l, a
+	push	hl
+	ld	hl, 5
+	push	hl
+	call	_fontlib_SetCursorPosition
+	pop	hl
+	pop	hl
+	ld	hl, (ix - 19)
+	push	hl
+	call	_fontlib_DrawString
 	pop	hl
 	ld	bc, 40
 	ld	de, 0
@@ -64,21 +89,21 @@ BB1_1:
 	or	a, a
 	sbc	hl, bc
 	jq	z, BB1_10
-	ld	(ix - 9), de
+	ld	(ix - 22), de
 	ex	de, hl
 	ld	c, 3
 	call	__ishl
-	ld	(ix - 15), hl
-	ld	iy, (ix - 3)
+	ld	(ix - 28), hl
+	ld	iy, (ix - 16)
 	or	a, a
 	sbc	hl, hl
 BB1_3:
-	ld	(ix - 6), hl
+	ld	(ix - 19), hl
 	ld	de, 240
 	or	a, a
 	sbc	hl, de
 	jq	z, BB1_4
-	ld	(ix - 12), iy
+	ld	(ix - 25), iy
 	ld	iy, (iy)
 	lea	hl, iy
 	ld	de, 1
@@ -93,7 +118,7 @@ BB1_3:
 	sbc	hl, de
 	ld	hl, 6
 	ex	de, hl
-	ld	hl, (ix - 6)
+	ld	hl, (ix - 19)
 	jq	nz, BB1_9
 	ld	a, -64
 	ld	l, a
@@ -105,9 +130,9 @@ BB1_8:
 	push	hl
 	ld	hl, 8
 	push	hl
-	ld	hl, (ix - 6)
+	ld	hl, (ix - 19)
 	push	hl
-	ld	hl, (ix - 15)
+	ld	hl, (ix - 28)
 	push	hl
 	call	_gfx_FillRectangle
 	ld	de, 6
@@ -115,18 +140,18 @@ BB1_8:
 	pop	hl
 	pop	hl
 	pop	hl
-	ld	hl, (ix - 6)
+	ld	hl, (ix - 19)
 BB1_9:
 	add	hl, de
-	ld	iy, (ix - 12)
+	ld	iy, (ix - 25)
 	lea	iy, iy + 3
 	jq	BB1_3
 BB1_4:
-	ld	de, (ix - 9)
+	ld	de, (ix - 22)
 	inc	de
-	ld	iy, (ix - 3)
+	ld	iy, (ix - 16)
 	lea	iy, iy + 120
-	ld	(ix - 3), iy
+	ld	(ix - 16), iy
 	ld	bc, 40
 	jq	BB1_1
 BB1_10:
@@ -697,6 +722,44 @@ BB7_4:
 	public	_main
 _main:
 	call	_gfx_Begin
+	ld	hl, (_test_font)
+	ld	de, 0
+	push	de
+	push	hl
+	call	_fontlib_SetFont
+	pop	hl
+	pop	hl
+	ld	hl, 2
+	push	hl
+	push	hl
+	call	_fontlib_SetLineSpacing
+	pop	hl
+	pop	hl
+	ld	hl, -16
+	push	hl
+	ld	hl, 320
+	push	hl
+	ld	hl, 5
+	push	hl
+	push	hl
+	call	_fontlib_SetWindow
+	pop	hl
+	pop	hl
+	pop	hl
+	pop	hl
+	or	a, a
+	sbc	hl, hl
+	push	hl
+	dec	hl
+	push	hl
+	call	_fontlib_SetColors
+	pop	hl
+	pop	hl
+	or	a, a
+	sbc	hl, hl
+	push	hl
+	call	_fontlib_SetTransparency
+	pop	hl
 	call	_build_snake
 	call	_set_apple_pos
 BB8_1:
@@ -710,7 +773,7 @@ BB8_1:
 	call	_move_snake
 	call	_generate_frame
 	call	_draw_frame
-	ld	hl, 75000
+	ld	hl, 50000
 	push	hl
 	call	_usleep
 	pop	hl
@@ -742,6 +805,11 @@ _snake_len:
 _score:
 	rb	3
 
+	section	.rodata,"a",@progbits
+	private	L_.str
+L_.str:
+	db	"score %d", 0
+
 	section	.bss,"aw",@nobits
 	public	_game
 _game:
@@ -760,20 +828,31 @@ _snake:
 	ident	"clang version 14.0.0 (https://github.com/jacobly0/llvm-project a139def90d26173f771eb1eca797633d1fbb2797)"
 	extern	_random
 	extern	__Unwind_SjLj_Register
+	extern	_fontlib_SetTransparency
 	extern	__frameset
 	extern	__lremu
+	extern	_fontlib_DrawString
 	extern	_gfx_Begin
 	extern	_usleep
+	extern	_fontlib_SetColors
+	extern	_fontlib_SetFont
+	extern	_fontlib_ClearWindow
 	extern	__ishl
+	extern	_fontlib_SetWindow
 	extern	_gfx_SetDraw
+	extern	_test_font
 	extern	__setflag
 	extern	_gfx_FillScreen
 	extern	__Unwind_SjLj_Unregister
 	extern	_gfx_Blit
 	extern	_srandom
 	extern	_gfx_FillRectangle
+	extern	_fontlib_GetWindowYMin
+	extern	_fontlib_SetLineSpacing
 	extern	__imulu
 	extern	_gfx_SetColor
+	extern	___sprintf
+	extern	_fontlib_SetCursorPosition
 	extern	_os_GetCSC
 	extern	_gfx_End
 	extern	_time
