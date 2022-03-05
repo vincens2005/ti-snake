@@ -43,7 +43,7 @@ _rand_range:
 	section	.text,"ax",@progbits
 	public	_draw_frame
 _draw_frame:
-	ld	hl, -44
+	ld	hl, -32
 	call	__frameset
 	ld	hl, 1
 	lea	de, ix - 13
@@ -103,167 +103,81 @@ _draw_frame:
 	call	_fontlib_DrawString
 	pop	hl
 BB1_2:
-	ld	hl, _game
-	ld	(ix - 32), hl
-	ld	de, 40
-	ld	bc, 0
-BB1_3:
-	push	bc
-	pop	hl
-	or	a, a
-	sbc	hl, de
-	jq	z, BB1_12
-	ld	(ix - 41), bc
-	push	bc
-	pop	hl
-	ld	c, 3
-	call	__ishl
-	ld	(ix - 44), hl
-	ld	iy, (ix - 32)
-	ld	(ix - 35), iy
-	or	a, a
-	sbc	hl, hl
-BB1_5:
-	ld	(ix - 38), hl
-	ld	bc, 240
-	or	a, a
-	sbc	hl, bc
-	jq	z, BB1_6
-	ld	hl, (ix - 35)
-	ld	de, (hl)
-	push	de
-	pop	hl
-	ld	bc, 1
-	or	a, a
-	sbc	hl, bc
-	ld	a, 7
-	ld	l, a
-	jq	z, BB1_10
-	ex	de, hl
-	ld	de, 2
-	or	a, a
-	sbc	hl, de
-	ld	hl, 6
-	ex	de, hl
-	ld	hl, (ix - 38)
-	jq	nz, BB1_11
-	ld	a, -64
-	ld	l, a
-BB1_10:
+	ld	hl, -64
 	push	hl
 	call	_gfx_SetColor
 	pop	hl
-	ld	hl, 6
+	ld	de, (_apple_pos)
+	ld	c, 3
+	push	de
+	pop	hl
+	call	__ishl
 	push	hl
-	ld	hl, 8
+	pop	iy
+	ex	de, hl
+	ld	bc, 6
+	call	__imulu
+	push	bc
+	ld	de, 8
+	push	de
 	push	hl
-	ld	hl, (ix - 38)
-	push	hl
-	ld	hl, (ix - 44)
-	push	hl
+	push	iy
 	call	_gfx_FillRectangle
-	ld	de, 6
 	pop	hl
 	pop	hl
 	pop	hl
 	pop	hl
-	ld	hl, (ix - 38)
-BB1_11:
-	add	hl, de
-	ld	iy, (ix - 35)
-	lea	iy, iy + 3
-	ld	(ix - 35), iy
-	ld	de, 40
-	jq	BB1_5
-BB1_6:
-	ld	bc, (ix - 41)
-	inc	bc
-	ld	iy, (ix - 32)
-	lea	iy, iy + 120
+	ld	hl, 7
+	push	hl
+	call	_gfx_SetColor
+	pop	hl
+	ld	bc, 9000
+	ld	iy, 0
+BB1_3:
+	lea	hl, iy
+	or	a, a
+	sbc	hl, bc
+	jq	z, BB1_6
+	lea	de, iy
 	ld	(ix - 32), iy
+	ld	iy, _snake
+	add	iy, de
+	ld	hl, (iy)
+	ld	de, (ix - 32)
+	add	hl, bc
+	or	a, a
+	sbc	hl, bc
+	jq	z, BB1_6
+	ld	iy, _snake
+	add	iy, de
+	ld	hl, (iy + 3)
+	ld	c, 3
+	call	__ishl
+	push	hl
+	pop	de
+	ld	hl, (iy + 6)
+	ld	bc, 6
+	call	__imulu
+	push	bc
+	ld	bc, 8
+	push	bc
+	push	hl
+	push	de
+	call	_gfx_FillRectangle
+	ld	bc, 9000
+	ld	iy, (ix - 32)
+	pop	hl
+	pop	hl
+	pop	hl
+	pop	hl
+	ld	de, 9
+	add	iy, de
 	jq	BB1_3
-BB1_12:
+BB1_6:
 	ld	hl, 1
 	push	hl
 	call	_gfx_Blit
 	ld	sp, ix
-	pop	ix
-	ret
-	section	.text,"ax",@progbits
-
-	section	.text,"ax",@progbits
-	public	_generate_frame
-_generate_frame:
-	ld	hl, -3
-	call	__frameset
-	ld	iy, _game
-	xor	a, a
-	or	a, a
-	sbc	hl, hl
-	ld	(ix - 3), hl
-	ld	(_game), a
-	lea	hl, iy
-	inc	hl
-	ld	bc, 4799
-	ex	de, hl
-	lea	hl, iy
-	ldir
-	ld	hl, (_apple_pos)
-	ld	de, (_apple_pos+3)
-	ld	bc, 120
-	call	__imulu
-	push	hl
-	pop	bc
-	add	iy, bc
-	ld	bc, 3
-	ex	de, hl
-	call	__imulu
-	push	hl
-	pop	de
-	add	iy, de
-	ld	hl, 2
-	ld	(iy), hl
-	ld	bc, 9000
-BB2_1:
-	ld	hl, (ix - 3)
-	or	a, a
-	sbc	hl, bc
-	jq	z, BB2_4
-	ld	de, (ix - 3)
-	ld	iy, _snake
-	add	iy, de
-	ld	hl, (iy)
-	add	hl, bc
-	or	a, a
-	sbc	hl, bc
-	jq	z, BB2_4
-	ld	de, (ix - 3)
-	ld	iy, _snake
-	add	iy, de
-	ld	hl, (iy + 3)
-	ld	de, (iy + 6)
-	ld	bc, 120
-	call	__imulu
-	push	hl
-	pop	bc
-	ld	iy, _game
-	add	iy, bc
-	ex	de, hl
-	ld	bc, 3
-	call	__imulu
-	ld	bc, 9000
-	push	hl
-	pop	de
-	add	iy, de
-	ld	hl, 1
-	ld	(iy), hl
-	ld	de, 9
-	ld	hl, (ix - 3)
-	add	hl, de
-	ld	(ix - 3), hl
-	jq	BB2_1
-BB2_4:
-	pop	hl
 	pop	ix
 	ret
 	section	.text,"ax",@progbits
@@ -296,67 +210,65 @@ _checkinput:
 	call	_os_GetCSC
 	ld	de, (_direction)
 	cp	a, 4
-	jq	nz, BB4_4
+	jq	nz, BB3_4
 	ld	bc, 3
 	push	de
 	pop	hl
 	or	a, a
 	sbc	hl, bc
-	jq	z, BB4_4
+	jq	z, BB3_4
 	ld	hl, 1
-	jq	BB4_3
-BB4_4:
+	jq	BB3_3
+BB3_4:
 	cp	a, 1
-	jq	nz, BB4_7
+	jq	nz, BB3_7
 	ld	bc, 1
 	push	de
 	pop	hl
 	or	a, a
 	sbc	hl, bc
-	jq	z, BB4_7
+	jq	z, BB3_7
 	ld	hl, 3
-	jq	BB4_3
-BB4_7:
+	jq	BB3_3
+BB3_7:
 	cp	a, 2
-	jq	nz, BB4_10
+	jq	nz, BB3_10
 	ld	bc, 2
 	push	de
 	pop	hl
 	or	a, a
 	sbc	hl, bc
-	jq	z, BB4_10
+	jq	z, BB3_10
 	or	a, a
 	sbc	hl, hl
-	jq	BB4_3
-BB4_10:
+	jq	BB3_3
+BB3_10:
 	cp	a, 3
-	jq	nz, BB4_13
+	jq	nz, BB3_13
 	ex	de, hl
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jq	z, BB4_13
+	jq	z, BB3_13
 	ld	hl, 2
-BB4_3:
+BB3_3:
 	ld	(_direction), hl
 	ret
-BB4_13:
+BB3_13:
 	cp	a, 15
-	jq	nz, BB4_15
+	jq	nz, BB3_15
 	or	a, a
 	sbc	hl, hl
 	ld	(_game_looping), hl
-BB4_15:
+BB3_15:
 	ret
 	section	.text,"ax",@progbits
 
 	section	.text,"ax",@progbits
-	public	_increment_highscore
-_increment_highscore:
+	public	_save_highscore
+_save_highscore:
 	ld	hl, L_.str.2
 	ld	de, L_.str.3
-	ld	bc, (_score)
-	ld	(_highscore), bc
 	push	de
 	push	hl
 	call	_ti_Open
@@ -415,39 +327,38 @@ _check_apple_hit:
 	ld	(ix - 3), hl
 	or	a, a
 	sbc	hl, bc
-	jq	nz, BB7_7
+	jq	nz, BB6_9
 	ld	hl, (_snake+6)
 	ld	bc, (_apple_pos+3)
 	or	a, a
 	sbc	hl, bc
-	jq	nz, BB7_7
+	jq	nz, BB6_9
 	ld	hl, (_snake_len)
 	inc	hl
 	ld	(_snake_len), hl
 	ld	hl, (_score)
 	push	hl
-	pop	de
-	inc	de
-	ld	(_score), de
-	ld	de, (_highscore)
+	pop	iy
+	inc	iy
+	ld	(_score), iy
+	ld	bc, (_highscore)
 	or	a, a
-	sbc	hl, de
+	sbc	hl, bc
 	call	__setflag
-	call	p, _increment_highscore
-	ld	iy, 9009
-	ld	bc, 0
-	push	bc
-	pop	hl
-BB7_3:
-	ld	(ix - 3), hl
+	jq	m, BB6_4
+	ld	(_highscore), iy
+BB6_4:
+	ld	bc, 9009
+	ld	(ix - 3), de
+BB6_5:
+	ld	hl, (ix - 3)
 	ld	de, 9
 	add	hl, de
 	push	hl
 	pop	de
-	lea	bc, iy
 	or	a, a
 	sbc	hl, bc
-	jq	z, BB7_6
+	jq	z, BB6_8
 	ld	iy, _snake
 	ld	bc, (ix - 3)
 	add	iy, bc
@@ -455,29 +366,28 @@ BB7_3:
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	push	de
-	pop	hl
-	ld	iy, 9009
-	jq	nz, BB7_3
+	ld	(ix - 3), de
+	ld	bc, 9009
+	jq	nz, BB6_5
 	ld	iy, _snake
 	add	iy, de
 	ld	hl, 1
 	ld	(iy - 9), hl
-BB7_6:
+BB6_8:
 	call	_set_apple_pos
 	ld	hl, (_snake+3)
 	ld	(ix - 3), hl
 	ld	de, 0
-BB7_7:
+BB6_9:
 	ld	hl, (_snake+6)
 	ld	(ix - 6), hl
 	ld	bc, 8991
-BB7_8:
+BB6_10:
 	push	de
 	pop	hl
 	or	a, a
 	sbc	hl, bc
-	jq	z, BB7_14
+	jq	z, BB6_16
 	push	de
 	pop	bc
 	ld	iy, _snake
@@ -486,7 +396,7 @@ BB7_8:
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jq	z, BB7_14
+	jq	z, BB6_16
 	push	de
 	pop	bc
 	ld	iy, _snake
@@ -495,7 +405,7 @@ BB7_8:
 	ld	hl, (ix - 3)
 	or	a, a
 	sbc	hl, bc
-	jq	nz, BB7_13
+	jq	nz, BB6_15
 	push	de
 	pop	bc
 	ld	iy, _snake
@@ -504,18 +414,18 @@ BB7_8:
 	ld	hl, (ix - 6)
 	or	a, a
 	sbc	hl, bc
-	jq	nz, BB7_13
+	jq	nz, BB6_15
 	or	a, a
 	sbc	hl, hl
 	ld	(_game_looping), hl
-BB7_13:
+BB6_15:
 	ld	bc, 9
 	ex	de, hl
 	add	hl, bc
 	ld	bc, 8991
 	ex	de, hl
-	jq	BB7_8
-BB7_14:
+	jq	BB6_10
+BB6_16:
 	ld	sp, ix
 	pop	ix
 	ret
@@ -526,96 +436,148 @@ BB7_14:
 _move_snake:
 	ld	hl, -9018
 	call	__frameset
-	ld	bc, -9006
+	ld	de, -9006
 	lea	iy, ix
-	add	iy, bc
+	add	iy, de
 	ld	hl, 1
 	push	ix
-	ld	bc, -9012
-	add	ix, bc
+	ld	de, -9009
+	add	ix, de
 	ld	(ix), iy
 	pop	ix
 	ld	(iy), hl
-	ld	iy, (_snake+3)
-	ld	hl, (_snake+6)
-	push	ix
-	ld	bc, -9009
-	add	ix, bc
-	ld	(ix), hl
-	pop	ix
-	ld	de, (_direction)
-	push	de
+	ld	hl, (_snake+3)
+	ld	de, -9015
+	lea	iy, ix
+	add	iy, de
+	ld	(iy), hl
+	ld	iy, (_snake+6)
+	ld	bc, (_direction)
+	push	bc
 	pop	hl
-	ld	bc, 4
+	ld	de, 4
 	or	a, a
-	sbc	hl, bc
-	jq	nc, BB8_1
-	ld	hl, LJTI8_0
-	add	hl, de
-	add	hl, de
-	add	hl, de
-	ld	hl, (hl)
-	jp	(hl)
-BB8_4:
-	dec	iy
-	jq	BB8_1
-BB8_3:
-	inc	iy
-BB8_1:
-	ld	bc, -9009
+	sbc	hl, de
+	jq	c, BB7_2
+	ld	bc, -9012
 	lea	hl, ix
 	add	hl, bc
-	ld	de, (hl)
-BB8_7:
+	ld	(hl), iy
+	jq	BB7_8
+BB7_2:
+	ld	hl, LJTI7_0
+	add	hl, bc
+	add	hl, bc
+	add	hl, bc
+	ld	hl, (hl)
+	jp	(hl)
+BB7_4:
+	ld	bc, -9012
+	lea	hl, ix
+	add	hl, bc
+	ld	(hl), iy
+	ld	bc, -9015
+	lea	iy, ix
+	add	iy, bc
+	ld	de, (iy)
+	dec	de
+	jq	BB7_9
+BB7_3:
+	ld	bc, -9012
+	lea	hl, ix
+	add	hl, bc
+	ld	(hl), iy
+	ld	bc, -9015
+	lea	iy, ix
+	add	iy, bc
+	ld	de, (iy)
+	inc	de
+	jq	BB7_9
+BB7_5:
+	inc	iy
+	jq	BB7_7
+BB7_6:
+	dec	iy
+BB7_7:
+	ld	bc, -9012
+	lea	hl, ix
+	add	hl, bc
+	ld	(hl), iy
+BB7_8:
+	ld	bc, -9015
+	lea	iy, ix
+	add	iy, bc
+	ld	de, (iy)
+BB7_9:
+	ld	iy, 40
 	ld	bc, 0
-	lea	hl, iy
+	push	de
+	pop	hl
 	or	a, a
 	sbc	hl, bc
 	call	__setflag
-	jq	p, BB8_9
-	ld	iy, 40
-BB8_9:
-	ld	bc, 41
-	lea	hl, iy
+	lea	bc, iy
+	jq	m, BB7_11
+	push	de
+	pop	bc
+BB7_11:
+	ld	de, 41
+	push	bc
+	pop	hl
 	or	a, a
-	sbc	hl, bc
+	sbc	hl, de
 	call	__setflag
 	ld	hl, 0
-	jq	p, BB8_11
-	lea	hl, iy
-BB8_11:
-	ld	bc, -9012
+	jq	p, BB7_13
+	push	bc
+	pop	hl
+BB7_13:
+	ld	bc, -9009
 	lea	iy, ix
 	add	iy, bc
 	ld	iy, (iy)
 	ld	(iy + 3), hl
-	ld	bc, 40
-	push	de
-	pop	hl
-	or	a, a
-	sbc	hl, bc
-	ld	bc, 0
-	jq	z, BB8_13
-	push	de
-	pop	bc
-BB8_13:
-	lea	hl, iy
-	push	ix
-	ld	de, -9009
-	add	ix, de
-	ld	(ix), hl
-	pop	ix
+	ld	de, 40
+	ld	(ix - 3), de
+	ld	de, -9012
+	lea	hl, ix
+	add	hl, de
+	ld	bc, (hl)
 	push	bc
 	pop	hl
-	ld	de, 0
+	ld	de, (ix - 3)
 	or	a, a
 	sbc	hl, de
-	call	__setflag
-	jq	p, BB8_15
-	ld	bc, 39
-BB8_15:
-	ld	(iy + 6), bc
+	ld	de, 0
+	jq	z, BB7_15
+	push	bc
+	pop	de
+BB7_15:
 	ld	bc, -9009
+	lea	hl, ix
+	add	hl, bc
+	ld	iy, (hl)
+	lea	hl, iy
+	ld	bc, -9012
+	lea	iy, ix
+	add	iy, bc
+	ld	(iy), hl
+	push	de
+	pop	hl
+	ld	bc, 0
+	or	a, a
+	sbc	hl, bc
+	call	__setflag
+	ld	hl, 40
+	jq	m, BB7_17
+	ex	de, hl
+BB7_17:
+	ld	bc, -9009
+	lea	iy, ix
+	add	iy, bc
+	ld	iy, (iy)
+	ld	(iy + 6), hl
+	ld	bc, -9012
 	lea	hl, ix
 	add	hl, bc
 	ld	iy, (hl)
@@ -628,19 +590,19 @@ BB8_15:
 	ld	iy, 0
 	lea	hl, iy
 	ld	bc, _snake+3
-BB8_16:
+BB7_18:
 	ld	(ix - 3), bc
 	push	ix
-	ld	bc, -9012
+	ld	bc, -9009
 	add	ix, bc
 	ld	(ix), hl
 	pop	ix
 	or	a, a
 	sbc	hl, de
 	ld	bc, (ix - 3)
-	jq	z, BB8_19
+	jq	z, BB7_21
 	ld	(ix - 3), bc
-	ld	bc, -9012
+	ld	bc, -9009
 	lea	hl, ix
 	add	hl, bc
 	ld	de, (hl)
@@ -652,9 +614,9 @@ BB8_16:
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jq	z, BB8_18
+	jq	z, BB7_20
 	ld	(ix - 3), bc
-	ld	bc, -9012
+	ld	bc, -9009
 	lea	iy, ix
 	add	iy, bc
 	ld	de, (iy)
@@ -689,7 +651,7 @@ BB8_16:
 	add	iy, bc
 	ld	iy, (iy)
 	ld	(iy + 6), hl
-	ld	bc, -9012
+	ld	bc, -9009
 	lea	hl, ix
 	add	hl, bc
 	ld	hl, (hl)
@@ -698,17 +660,17 @@ BB8_16:
 	ld	iy, 0
 	ld	de, 8991
 	ld	bc, (ix - 3)
-	jq	BB8_16
-BB8_18:
+	jq	BB7_18
+BB7_20:
 	ld	iy, 0
-	jq	BB8_19
-BB8_20:
+	jq	BB7_21
+BB7_22:
 	lea	bc, iy
-	ld	de, -9012
+	ld	de, -9009
 	lea	hl, ix
 	add	hl, de
 	ld	(hl), iy
-	ld	de, -9009
+	ld	de, -9012
 	lea	iy, ix
 	add	iy, de
 	ld	iy, (iy)
@@ -727,44 +689,30 @@ BB8_20:
 	push	de
 	pop	iy
 	ld	(iy + 6), hl
-	ld	bc, -9012
+	ld	bc, -9009
 	lea	hl, ix
 	add	hl, bc
 	ld	iy, (hl)
 	ld	de, 9
 	add	iy, de
-BB8_19:
+BB7_21:
 	ld	de, 9000
 	lea	hl, iy
 	or	a, a
 	sbc	hl, de
-	jq	nz, BB8_20
+	jq	nz, BB7_22
 	ld	sp, ix
 	pop	ix
 	ret
-BB8_5:
-	ld	bc, -9009
-	lea	hl, ix
-	add	hl, bc
-	ld	de, (hl)
-	inc	de
-	jq	BB8_7
-BB8_6:
-	ld	bc, -9009
-	lea	hl, ix
-	add	hl, bc
-	ld	de, (hl)
-	dec	de
-	jq	BB8_7
 	section	.text,"ax",@progbits
 	section	.rodata,"a",@progbits
-lJTI8_0:
-	private	LJTI8_0
-LJTI8_0:
-	dl	BB8_4
-	dl	BB8_6
-	dl	BB8_3
-	dl	BB8_5
+lJTI7_0:
+	private	LJTI7_0
+LJTI7_0:
+	dl	BB7_4
+	dl	BB7_6
+	dl	BB7_3
+	dl	BB7_5
 
 	section	.text,"ax",@progbits
 	public	_build_snake
@@ -781,18 +729,18 @@ _build_snake:
 	or	a, a
 	sbc	hl, bc
 	call	__setflag
-	jq	p, BB9_2
+	jq	p, BB8_2
 	ld	de, 0
-BB9_2:
+BB8_2:
 	ld	iy, _snake+3
 	ld	bc, 20
-BB9_3:
+BB8_3:
 	push	de
 	pop	hl
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jq	z, BB9_4
+	jq	z, BB8_4
 	ld	hl, 1
 	ld	(iy - 3), hl
 	ld	hl, (ix - 3)
@@ -804,8 +752,8 @@ BB9_3:
 	ld	(ix - 3), hl
 	dec	de
 	lea	iy, iy + 9
-	jq	BB9_3
-BB9_4:
+	jq	BB8_3
+BB8_4:
 	pop	hl
 	pop	ix
 	ret
@@ -856,23 +804,23 @@ _main:
 	call	_load_highscore
 	call	_build_snake
 	call	_set_apple_pos
-BB10_1:
+BB9_1:
 	ld	hl, (_game_looping)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jq	z, BB10_3
+	jq	z, BB9_3
 	call	_checkinput
 	call	_check_apple_hit
 	call	_move_snake
-	call	_generate_frame
 	call	_draw_frame
 	ld	hl, 30000
 	push	hl
 	call	_usleep
 	pop	hl
-	jq	BB10_1
-BB10_3:
+	jq	BB9_1
+BB9_3:
+	call	_save_highscore
 	call	_gfx_End
 	or	a, a
 	sbc	hl, hl
@@ -897,7 +845,7 @@ _highscore:
 	section	.data,"aw",@progbits
 	public	_snake_len
 _snake_len:
-	dl	15
+	dl	8
 
 	section	.bss,"aw",@nobits
 	public	_score
@@ -913,11 +861,6 @@ L_.str:
 	private	L_.str.1
 L_.str.1:
 	db	"hi score %d", 0
-
-	section	.bss,"aw",@nobits
-	public	_game
-_game:
-	rb	4800
 
 	section	.bss,"aw",@nobits
 	public	_apple_pos
@@ -971,11 +914,11 @@ L_.str.4:
 	extern	_fontlib_GetWindowYMin
 	extern	_fontlib_SetLineSpacing
 	extern	__imulu
-	extern	_ti_Open
 	extern	_gfx_SetColor
+	extern	_ti_Open
 	extern	___sprintf
 	extern	_fontlib_SetCursorPosition
-	extern	_gfx_End
 	extern	_os_GetCSC
 	extern	_fontlib_Newline
+	extern	_gfx_End
 	extern	_time
