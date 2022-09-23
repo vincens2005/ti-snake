@@ -38,23 +38,23 @@ int rand_range(int min, int max) {
 void draw_frame() {
 	gfx_SetDrawBuffer();
 	gfx_FillScreen(0);
-	
+
 	char text_score[13]; // max seven digit number score
 	sprintf(text_score, "score %d", score);
 	fontlib_ClearWindow();
 	fontlib_SetCursorPosition(5, fontlib_GetWindowYMin());
 	fontlib_DrawString(text_score);
-	
+
 	if (highscore > 0) {
 		char text_hs[16];
 		sprintf(text_hs, "hi score %d", highscore);
 		fontlib_Newline();
 		fontlib_DrawString(text_hs);
-	}	
-	
+	}
+
 	gfx_SetColor(192); // red
 	gfx_FillRectangle(LCD_WIDTH / GAME_RES * apple_pos[0], LCD_HEIGHT / GAME_RES * apple_pos[0], LCD_WIDTH / GAME_RES, LCD_HEIGHT / GAME_RES); // draw the apple
-	
+
 	// draw the snake
 	gfx_SetColor(7); // green
 	for (int i = 0; i < 1000; i++) {
@@ -64,7 +64,7 @@ void draw_frame() {
 		gfx_FillRectangle(LCD_WIDTH / GAME_RES * snake[i][1], LCD_HEIGHT / GAME_RES * snake[i][2], LCD_WIDTH / GAME_RES, LCD_HEIGHT / GAME_RES);
 
 	}
-	
+
 	gfx_BlitBuffer(); // copy the buffer to the screen
 }
 
@@ -73,7 +73,7 @@ void set_apple_pos() {
 	apple_pos[0] = rand_range(2, GAME_RES - 2);
 	apple_pos[1] = rand_range(2, GAME_RES - 2);
 }
-	
+
 
 void checkinput() {
 	sk_key_t key = os_GetCSC();
@@ -89,7 +89,7 @@ void checkinput() {
 	if (key == sk_Right && direction != LEFT) {
 		direction = RIGHT;
 	}
-	if (key == sk_Clear) {
+	if (key == sk_Mode) {
 		game_looping = 0;
 	}
 
@@ -120,7 +120,7 @@ void check_apple_hit() {
 		}
 		set_apple_pos();
 	}
-	
+
 	for (int i = 1; i < 1000; i++) {
 		if (!snake[i][0]) {
 			break;
@@ -133,7 +133,7 @@ void check_apple_hit() {
 
 void move_snake() {
 	int new_snake[1000][3];
-	
+
 	new_snake[0][0] = 1;
 	new_snake[0][1] = snake[0][1];
 	new_snake[0][2] = snake[0][2];
@@ -150,7 +150,7 @@ void move_snake() {
 	else if (direction == UP) {
 		new_snake[0][2] -= 1;
 	}
-	
+
 	// wrap snake
 	if (new_snake[0][1] < 0) {
 		new_snake[0][1] = GAME_RES;
@@ -164,7 +164,7 @@ void move_snake() {
 	if (new_snake[0][2] < 0) {
 		new_snake[0][2] = GAME_RES;
 	}
-	
+
 	for (int i = 0; i < 999; i++) {
 		if (!snake[i][0]) {
 			break;
@@ -173,7 +173,7 @@ void move_snake() {
 		new_snake[i + 1][1] = snake[i][1];
 		new_snake[i + 1][2] = snake[i][2];
 	}
-	
+
 	for (int i = 0; i < 1000; i++) {
 		snake[i][1] = new_snake[i][1];
 		snake[i][2] = new_snake[i][2];
@@ -195,7 +195,7 @@ int main(void) {
 	fontlib_SetWindow(5, 5, LCD_WIDTH, LCD_HEIGHT);
 	fontlib_SetColors(255, 0);
 	fontlib_SetTransparency(false);
-	
+
 	load_highscore();
 	build_snake();
 	set_apple_pos();
@@ -204,11 +204,11 @@ int main(void) {
 		check_apple_hit();
 		move_snake();
 		draw_frame();
-		usleep(30000);		
+		usleep(30000);
 
 		//game_looping++;
 	}
-	
+
 	save_highscore();
 	gfx_End();
 

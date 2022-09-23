@@ -255,7 +255,7 @@ BB3_3:
 	ld	(_direction), hl
 	ret
 BB3_13:
-	cp	a, 15
+	cp	a, 55
 	jq	nz, BB3_15
 	or	a, a
 	sbc	hl, hl
